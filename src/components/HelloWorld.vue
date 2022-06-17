@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     async loadMap() {
-      await Weiwudi.registerSW("/service-worker.js", { scope: "./" });
+      await Weiwudi.registerSW("sw.js", { scope: "./" });
 
       // WMTS map case
       const map2 = await Weiwudi.registerMap("wmts_map", {
