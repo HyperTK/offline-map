@@ -1,58 +1,80 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <button @click="loadMap">Primary</button>
+    <GmapMap
+      :center="{ lat: 35.66606091, lng: 139.41392096 }"
+      :zoom="16"
+      map-type-id="satellite"
+      style="width: 100%; height: 500px"
+      @click="mapClick"
+    ></GmapMap>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
-</script>
+import Weiwudi from "weiwudi";
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
+export default {
+  name: "HelloWorld",
+  props: {
+    msg: String,
+  },
+  mounted() {
+
+  },
+  methods: {
+    async loadMap() {
+      await Weiwudi.registerSW("./sw.js", { scope: "./" });
+
+      // WMTS map case
+      const map2 = await Weiwudi.registerMap("wmts_map", {
+        type: "wmts",
+        minLat: 35.0,
+        maxLat: 35.1,
+        minLng: 135.0,
+        maxLng: 135.1,
+        minZoom: 17,
+        maxZoom: 18,
+        url: "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      });
+      // Get url template of cached map
+      const map2_url = map2.url;
+      console.log(map2_url);
+
+      // If map API access to map tile by using above url template,
+      // Tile images are automatically cached in indexedDB.
+
+      // Fetch all tiles
+      map2.addEventListener("proceed", (e) => {
+        // Write some codes for handling event of proceeding to fetch tiles
+        console.log(e);
+      });
+      map2.addEventListener("finish", (e) => {
+        // Write some codes for handling event of finishing to fetch tiles
+        console.log(e);
+      });
+      map2.addEventListener("stop", (e) => {
+        // Write some codes for handling event of stopping to fetch tiles by some errors
+        console.log(e);
+      });
+      // Start fetching
+      await map2.fetchAll();
+
+      // Clean all cached tile images
+      await map2.clean();
+
+      // Remove registered map setting
+      await map2.remove();
+    },
+    async mapClick(e) {
+      try {
+        console.log(e);
+        //$event.latLngにクリック地点が入っている
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  },
+};
+</script>

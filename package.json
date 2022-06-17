@@ -11,7 +11,9 @@
     "core-js": "^3.8.3",
     "firebase": "^9.8.3",
     "register-service-worker": "^1.7.2",
-    "vue": "^2.6.14"
+    "vue": "^2.6.14",
+    "vue2-google-maps": "^0.10.7",
+    "weiwudi": "^0.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
