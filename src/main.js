@@ -6,6 +6,10 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from './firebase-config.js'
 
+import BootstrapVue from 'bootstrap-vue'
+Vue.use(BootstrapVue)
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.use(VueGoogleMaps, {
   load: {
