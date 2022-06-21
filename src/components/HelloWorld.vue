@@ -46,11 +46,12 @@
     <div class="row">
       <div class="col-sm">
         <div class="form-group">
+          <label for="minLat">最小緯度</label>
           <input
             v-model="minLat"
             type="number"
             class="form-control"
-            id="exampleInputEmail1"
+            id="minLat"
             aria-describedby="emailHelp"
             placeholder="最小緯度"
           />
@@ -58,23 +59,13 @@
       </div>
       <div class="col-sm">
         <div class="form-group">
-          <input
-            v-model="minLng"
-            type="number"
-            class="form-control"
-            id="exampleInputEmail1"
-            aria-describedby="emailHelp"
-            placeholder="最小経度"
-          />
-        </div>
-      </div>
-      <div class="col-sm">
-        <div class="form-group">
+          <label for="maxLat">最小緯度</label>
+
           <input
             v-model="maxLat"
             type="number"
             class="form-control"
-            id="exampleInputEmail1"
+            id="maxLat"
             aria-describedby="emailHelp"
             placeholder="最大緯度"
           />
@@ -82,11 +73,25 @@
       </div>
       <div class="col-sm">
         <div class="form-group">
+          <label for="minLng">最小経度</label>
+          <input
+            v-model="minLng"
+            type="number"
+            class="form-control"
+            id="minLng"
+            aria-describedby="emailHelp"
+            placeholder="最小経度"
+          />
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class="form-group">
+          <label for="maxLng">最大経度</label>
           <input
             v-model="maxLng"
             type="number"
             class="form-control"
-            id="exampleInputEmail1"
+            id="maxLng"
             aria-describedby="emailHelp"
             placeholder="最大経度"
           />
@@ -175,12 +180,11 @@ export default {
           this.maxLat = 35.796313836616164;
           this.minLng = 138.57158646655625;
           this.maxLng = 138.58453538436397;
-
           break;
         default:
           break;
       }
-      this.createMap()
+      this.createMap();
     },
   },
   mounted() {},
@@ -188,20 +192,23 @@ export default {
     async createMap() {
       this.map = new window.google.maps.Map(document.getElementById("map"), {
         //中心座標
-        center: { lat: this.minLat, lng: this.minLng },
+        center: { lat: this.calcCenter(this.minLat, this.maxLat), lng: this.calcCenter(this.minLng, this.maxLng) },
         //zoom
-        zoom: 18,
+        zoom: 14,
         //スクロール設定
         gestureHandling: this.gestureHandling, //スクロール設定
         //マップタイプ(地図、航空写真) コントロール
-        mapTypeControl: false,
+        mapTypeControl: true,
         //全画面表示コントロール
         fullscreenControl: false,
         //ストリートビュー コントロール
         streetViewControl: false,
         //ズーム コントロール
-        zoomControl: false,
+        zoomControl: true,
       });
+    },
+    calcCenter(a, b) {
+      return ((a + b) / 2)
     },
     addImageType() {
       const self = this;
@@ -215,7 +222,7 @@ export default {
         },
         tileSize: new window.google.maps.Size(256, 256),
         maxZoom: 18,
-        minZoom: 15,
+        minZoom: 14,
         name: "offline_map",
       });
       this.map.overlayMapTypes.insertAt(0, offlineMapType);
@@ -232,7 +239,7 @@ export default {
         maxLat: this.maxLat,
         minLng: this.minLng,
         maxLng: this.maxLng,
-        minZoom: 15,
+        minZoom: 14,
         maxZoom: 18,
         url: url,
       });
@@ -250,13 +257,8 @@ export default {
       });
       this.weiMap.addEventListener("finish", (e) => {
         this.message = e.detail.type;
-
         // Write some codes for handling event of finishing to fetch tiles
         console.log(e);
-
-        // Get url template of cached map
-        const map2_url = this.weiMap.url;
-        console.log(map2_url);
       });
       this.weiMap.addEventListener("stop", (e) => {
         // Write some codes for handling event of stopping to fetch tiles by some errors
